@@ -29,6 +29,7 @@ start.bat
 See:
 
 - [WINDOWS.md](WINDOWS.md) — Windows setup with Chrome CDP and Hermes native MCP
+- [BRIDGE_COMMANDS.md](BRIDGE_COMMANDS.md) — practical command reference for starting, testing, and using the bridge from Hermes
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — known pitfalls and fixes
 - [SECURITY.md](SECURITY.md) — local browser/CDP safety notes
 
