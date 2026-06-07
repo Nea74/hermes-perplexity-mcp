@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local browser/session state - NEVER commit these
+chrome-profile/
+chrome-debug-profile/
+**/Default/Network/Cookies*
+**/Default/History*
+**/Default/Sessions/
+**/Local State
+**/Preferences
+**/Secure Preferences
+
+# Runtime data
+logs/
+downloads/
+uploads/*
+!uploads/.gitkeep
+memory.json
+*.log
+
+# Local secrets/config
+.env
+.env.*
+auth.json
+*.token
+*.key
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

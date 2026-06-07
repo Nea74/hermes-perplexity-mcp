@@ -1,4 +1,4 @@
-import asyncio, json, logging, os, re, time, uuid, traceback
+import asyncio, getpass, json, logging, os, re, time, uuid, traceback
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
@@ -51,6 +51,9 @@ memory: dict = _load_memory()
 
 def find_chrome_exe() -> str:
     for c in [
+        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+        r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+        str(Path.home() / r"AppData\Local\Google\Chrome\Application\chrome.exe"),
         "/usr/bin/google-chrome-stable",
         "/usr/bin/google-chrome",
         "/opt/google/chrome/google-chrome",
@@ -65,6 +68,14 @@ def find_chrome_exe() -> str:
             return c
     log.info("[CHROME] No system Chrome found — will use Playwright bundled Chromium")
     return ""
+
+def _is_root() -> bool:
+    """Return True when running as Unix root; always False on Windows."""
+    return hasattr(os, "getuid") and os.getuid() == 0
+
+def _uid_label() -> str:
+    """Human-readable uid for logs that also works on Windows."""
+    return str(os.getuid()) if hasattr(os, "getuid") else f"windows:{getpass.getuser()}"
 
 CHROME_EXE = find_chrome_exe()
 
@@ -183,7 +194,7 @@ async def _launch_playwright_context():
     log.info("[LAUNCH] Mode     = Playwright persistent context (fallback)")
     log.info(f"[LAUNCH] Profile  = {profile}")
     log.info(f"[LAUNCH] Chrome   = {CHROME_EXE or 'playwright bundled chromium'}")
-    log.info(f"[LAUNCH] UID      = {os.getuid()}")
+    log.info(f"[LAUNCH] UID      = {_uid_label()}")
     log.info("=" * 55)
     for lock in ["SingletonLock", "SingletonCookie", "SingletonSocket"]:
         lp = AUTO_PROFILE / lock
@@ -196,7 +207,7 @@ async def _launch_playwright_context():
         "--no-default-browser-check", "--disable-default-apps",
         "--disable-infobars", "--window-size=1280,900",
     ]
-    if os.getuid() == 0:
+    if _is_root():
         args.append("--no-sandbox")
     kw: dict = dict(
         user_data_dir=profile, headless=False,
@@ -952,7 +963,7 @@ async def tool_send_message(p: dict) -> dict:
     st.last_attr = attr
     mdl = st.detected_model or st.current_model
     fname = f"response_{int(time.time())}.txt"
-    async with aiofiles.open(DOWNLOADS / fname, "w") as f:
+    async with aiofiles.open(DOWNLOADS / fname, "w", encoding="utf-8") as f:
         await f.write(f"Model: {mdl}\nAttribution: {attr}\n{'─'*60}\n{resp}")
     await broadcast("response_ready", {
         "preview": resp[:300],

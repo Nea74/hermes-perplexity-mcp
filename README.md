@@ -18,6 +18,20 @@ bash install.sh
 
 Then open: **http://localhost:3456/dashboard/**
 
+### Windows quick start
+
+Windows users should use the included wrapper and setup notes:
+
+```bat
+start.bat
+```
+
+See:
+
+- [WINDOWS.md](WINDOWS.md) — Windows setup with Chrome CDP and Hermes native MCP
+- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — known pitfalls and fixes
+- [SECURITY.md](SECURITY.md) — local browser/CDP safety notes
+
 ---
 
 ## Starting the Server
@@ -156,18 +170,16 @@ Memories are persisted to `memory.json` in the project root and survive server r
 
 ## Hermes Agent Config
 
-Add `hermes_mcp_config.json` to your Hermes agent:
+For Hermes Agent's native MCP client, use the CLI command instead of hand-editing a separate config file:
 
-```json
-{
-  "mcpServers": {
-    "perplexity-browser": {
-      "url": "http://localhost:3456/sse",
-      "transport": "sse"
-    }
-  }
-}
+```bash
+hermes mcp add perplexity-browser --url http://127.0.0.1:3456/mcp
+hermes mcp test perplexity-browser
 ```
+
+After changing MCP servers, start a new Hermes session or run `/reset` so the tool schemas are loaded.
+
+A standalone JSON example is included in `hermes_mcp_config.json`, but Hermes' own config is usually managed through `hermes mcp add` and stored in Hermes' profile config.
 
 ---
 
